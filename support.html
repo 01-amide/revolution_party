@@ -305,97 +305,18 @@
   </div>
   <div class="page-loader" id="pageLoader"><div class="spinner"></div></div>
   <div class="fireworks-container" id="fireworksContainer"></div>
-  <script>
-    (function() {
-      const SUPPORT_KEY = 'revolutionPartySupportCount';
-      const FLAG_KEY = 'revolutionPartyHasSupported';
-      const supportButton = document.getElementById('supportButton');
-      const supportCountEl = document.getElementById('supportCount');
-      const supportMessageEl = document.getElementById('supportMessage');
-      const fireworksContainer = document.getElementById('fireworksContainer');
-      let supportCount = Number(localStorage.getItem(SUPPORT_KEY) || 0);
-      let hasSupported = localStorage.getItem(FLAG_KEY) === 'true';
-
-      function updateSupportUI() {
-        supportCountEl.textContent = supportCount;
-        if (hasSupported) {
-          supportMessageEl.textContent = 'You have already supported. Thank you!';
-          supportButton.disabled = true;
-          supportButton.classList.add('button-disabled');
-        } else {
-          supportMessageEl.textContent = '';
-          supportButton.disabled = false;
-          supportButton.classList.remove('button-disabled');
-        }
-      }
-
-      function fireSupportFeedback(text) {
-        supportMessageEl.textContent = text;
-        const rect = supportButton.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        for (let i = 0; i < 48; i++) {
-          const dot = document.createElement('span');
-          dot.className = 'firework';
-          const size = 8 + Math.random() * 16;
-          dot.style.width = `${size}px`;
-          dot.style.height = `${size}px`;
-          const angle = Math.random() * Math.PI * 2;
-          const distance = 140 + Math.random() * 120;
-          const dx = Math.cos(angle) * distance + 'px';
-          const dy = Math.sin(angle) * distance + 'px';
-          dot.style.setProperty('--dx', dx);
-          dot.style.setProperty('--dy', dy);
-          dot.style.left = `${centerX}px`;
-          dot.style.top = `${centerY}px`;
-          dot.style.background = `hsl(${Math.floor(Math.random() * 80) + 320}, 100%, 70%)`;
-          fireworksContainer.appendChild(dot);
-          setTimeout(() => dot.remove(), 1300);
-        }
-      }
-
-      supportButton.addEventListener('click', function() {
-        if (hasSupported) {
-          fireSupportFeedback('Support already recorded.');
-          return;
-        }
-        supportCount += 1;
-        hasSupported = true;
-        localStorage.setItem(SUPPORT_KEY, supportCount);
-        localStorage.setItem(FLAG_KEY, 'true');
-        updateSupportUI();
-        fireSupportFeedback('Support recorded!');
-      });
-
-      updateSupportUI();
-      const loader = document.getElementById('pageLoader');
-      if (loader) {
-        const clickable = document.querySelectorAll('a[href], button');
-        clickable.forEach(node => {
-          node.addEventListener('click', () => {
-            const href = node.getAttribute('href') || '';
-            if (href.startsWith('#') || href.startsWith('mailto:')) return;
-            if (node.tagName === 'BUTTON' && node.type === 'button' && node.id === 'supportButton') {
-              loader.classList.add('active');
-              window.setTimeout(() => loader.classList.remove('active'), 550);
-              return;
-            }
-            loader.classList.add('active');
-          });
-        });
-      }
-    })();
-  </script>
   <script type="module">
-    // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      increment
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
   
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
       apiKey: "AIzaSyDjz43uaDCmI4w2e6lbJCZo0YNslj3fHmo",
       authDomain: "revolution-party.firebaseapp.com",
@@ -406,9 +327,97 @@
       measurementId: "G-J97YM1C2TV"
     };
   
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+  
+    const FLAG_KEY = 'revolutionPartyHasSupported';
+    const supportButton = document.getElementById('supportButton');
+    const supportCountEl = document.getElementById('supportCount');
+    const supportMessageEl = document.getElementById('supportMessage');
+    const fireworksContainer = document.getElementById('fireworksContainer');
+  
+    let hasSupported = localStorage.getItem(FLAG_KEY) === 'true';
+    const countRef = doc(db, 'stats', 'supporters');
+  
+    // Load count from Firestore on page load
+    async function loadCount() {
+      try {
+        const snap = await getDoc(countRef);
+        if (snap.exists()) {
+          supportCountEl.textContent = snap.data().count;
+        } else {
+          // First time — create the document
+          await setDoc(countRef, { count: 0 });
+          supportCountEl.textContent = 0;
+        }
+      } catch (e) {
+        console.error('Error loading count:', e);
+      }
+    }
+  
+    function updateButtonUI() {
+      if (hasSupported) {
+        supportMessageEl.textContent = 'You have already supported. Thank you!';
+        supportButton.disabled = true;
+        supportButton.classList.add('button-disabled');
+      } else {
+        supportMessageEl.textContent = '';
+        supportButton.disabled = false;
+        supportButton.classList.remove('button-disabled');
+      }
+    }
+  
+    function fireSupportFeedback(text) {
+      supportMessageEl.textContent = text;
+      const rect = supportButton.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      for (let i = 0; i < 48; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'firework';
+        const size = 8 + Math.random() * 16;
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 140 + Math.random() * 120;
+        dot.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+        dot.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+        dot.style.left = `${centerX}px`;
+        dot.style.top = `${centerY}px`;
+        dot.style.background = `hsl(${Math.floor(Math.random() * 80) + 320}, 100%, 70%)`;
+        fireworksContainer.appendChild(dot);
+        setTimeout(() => dot.remove(), 1300);
+      }
+    }
+  
+    supportButton.addEventListener('click', async function () {
+      if (hasSupported) {
+        fireSupportFeedback('Support already recorded.');
+        return;
+      }
+      try {
+        // Increment in Firestore
+        await updateDoc(countRef, { count: increment(1) });
+  
+        // Mark this user as having supported (locally)
+        hasSupported = true;
+        localStorage.setItem(FLAG_KEY, 'true');
+  
+        // Refresh displayed count
+        const snap = await getDoc(countRef);
+        supportCountEl.textContent = snap.data().count;
+  
+        updateButtonUI();
+        fireSupportFeedback('Support recorded!');
+      } catch (e) {
+        console.error('Error recording support:', e);
+        supportMessageEl.textContent = 'Something went wrong. Try again.';
+      }
+    });
+  
+    loadCount();
+    updateButtonUI();
   </script>
 </body>
 </html>
