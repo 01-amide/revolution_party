@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUASA Dues Summary — 25/26 Session</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+    :root {
+      color-scheme: dark;
+      --bg: #02081f;
+      --surface: rgba(10, 18, 45, 0.92);
+      --panel: rgba(12, 24, 52, 0.92);
+      --accent: #4fb8ff;
+      --accent-soft: #73d6ff;
+      --highlight: #ffd166;
+      --muted: #97abd5;
+      --text: #eef5ff;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, rgba(26, 123, 222, 0.14), transparent 24%),
+                  radial-gradient(circle at bottom right, rgba(199, 154, 41, 0.12), transparent 18%),
+                  linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+      color: var(--accent);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 34px 24px 48px; display: grid; gap: 28px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(19,47,92,0.08); }
+    .brand-logo img { width: 92px; display: block; }
+    .nav { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+    .nav a { text-decoration: none; color: var(--muted); font-weight: 600; transition: color 0.2s ease; }
+    .nav a:hover { color: var(--accent); }
+    .hero { position: relative; overflow: hidden; background: var(--surface); border-radius: 32px; padding: 42px 40px; border: 1px solid rgba(79,184,255,0.14); box-shadow: var(--shadow); }
+    .hero::before { content: ''; position: absolute; width: 210px; height: 210px; top: -60px; right: -60px; border-radius: 50%; background: radial-gradient(circle, rgba(26,123,222,0.16), transparent 58%); }
+    .hero::after { content: ''; position: absolute; width: 180px; height: 180px; bottom: -50px; left: -40px; border-radius: 50%; background: radial-gradient(circle, rgba(199,154,41,0.14), transparent 58%); }
+    .hero-label { display: inline-flex; align-items: center; padding: 10px 18px; border-radius: 999px; background: rgba(26,123,222,0.12); color: var(--accent); font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 16px; }
+    .hero-title { margin: 0 0 18px; font-size: clamp(2.8rem, 4.5vw, 3.8rem); line-height: 1.02; color: var(--accent); }
+    .hero-text { margin: 0 0 30px; color: var(--muted); line-height: 1.8; max-width: 760px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; padding: 16px 28px; border-radius: 999px; text-decoration: none; font-weight: 700; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+    .button-primary { background: linear-gradient(90deg, var(--accent), var(--accent-soft)); color: white; box-shadow: 0 18px 46px rgba(19,47,92,0.18); }
+    .button-secondary { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid rgba(255,255,255,0.16); }
+    .button:hover { transform: translateY(-2px); }
+    .summary-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .summary-card { background: rgba(255,255,255,0.08); border-radius: 28px; padding: 28px; border: 1px solid rgba(79,184,255,0.16); box-shadow: 0 20px 60px rgba(0,0,0,0.24); position: relative; overflow: hidden; }
+    .summary-card.center { max-width: 620px; margin: 0 auto; }
+    .summary-card::before { content: ''; position: absolute; top: -28px; right: -32px; width: 120px; height: 120px; border-radius: 50%; background: rgba(79,184,255,0.12); }
+    .summary-title { margin: 0 0 12px; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+    .summary-value { margin: 0; font-size: 2.8rem; line-height: 1.05; color: var(--accent); font-weight: 900; }
+    .summary-small { margin-top: 10px; color: var(--muted); font-size: 0.98rem; line-height: 1.7; }
+    .level-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .level-card { background: rgba(255,255,255,0.08); border-radius: 28px; padding: 28px; border: 1px solid rgba(79,184,255,0.16); box-shadow: 0 20px 60px rgba(0,0,0,0.24); position: relative; overflow: hidden; }
+    .level-card::before { content: ''; position: absolute; top: -24px; right: -28px; width: 100px; height: 100px; border-radius: 50%; background: rgba(79,184,255,0.12); }
+    .level-title { margin: 0 0 18px; font-size: 1.2rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+    .level-metrics { display: grid; gap: 14px; }
+    .level-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .level-key { color: var(--muted); font-size: 0.95rem; font-weight: 700; }
+    .level-value { color: var(--accent); font-size: 1.55rem; font-weight: 900; }
+    .level-status { margin-top: 18px; color: var(--highlight); font-size: 0.92rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .insight-panel { display: grid; gap: 18px; padding: 28px; border-radius: 32px; background: rgba(255,255,255,0.06); border: 1px solid rgba(79,184,255,0.14); }
+    .insight-card { background: rgba(255,255,255,0.08); padding: 24px; border-radius: 26px; box-shadow: 0 18px 40px rgba(0,0,0,0.22); }
+    .insight-card h3 { margin: 0 0 10px; font-size: 1.15rem; color: var(--accent); }
+    .insight-card p { margin: 0; color: var(--muted); line-height: 1.8; }
+    @media (max-width: 760px) { .page { padding: 24px 18px 36px; } .hero { padding: 34px 24px; } .summary-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand-logo">
+        <img src="revolution party logo.png" alt="Revolution Party Logo">
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="team.html">Team</a>
+        <a href="vision.html">Vision</a>
+        <a href="support.html">Support</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="hero-label">Financial record</span>
+      <h1 class="hero-title">NUASA 25/26 dues, transparently counted.</h1>
+      <p class="hero-text">Watch as each level is counted in real time and its dues are transferred into the session total above. The main amount is centered and built from the level totals below.</p>
+      <a href="support.html" class="button button-secondary">Back to support</a>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card center">
+        <p class="summary-title">Amount paid so far</p>
+        <p class="summary-value" id="duesTotal">₦ 0</p>
+        <p class="summary-small">Calculated from the level-by-level dues totals shown below.</p>
+      </article>
+    </section>
+
+    <section class="level-grid">
+      <article class="level-card" id="level100">
+        <h2 class="level-title">100 Level</h2>
+        <div class="level-metrics">
+          <div class="level-row"><span class="level-key">Students</span><span class="level-value count">0</span></div>
+          <div class="level-row"><span class="level-key">Dues per student</span><span class="level-value">₦ 50,000</span></div>
+          <div class="level-row"><span class="level-key">Level total</span><span class="level-value total">₦ 0</span></div>
+        </div>
+        <div class="level-status">Counting …</div>
+      </article>
+      <article class="level-card" id="level200">
+        <h2 class="level-title">200 Level</h2>
+        <div class="level-metrics">
+          <div class="level-row"><span class="level-key">Students</span><span class="level-value count">0</span></div>
+          <div class="level-row"><span class="level-key">Dues per student</span><span class="level-value">₦ 40,000</span></div>
+          <div class="level-row"><span class="level-key">Level total</span><span class="level-value total">₦ 0</span></div>
+        </div>
+        <div class="level-status">Waiting …</div>
+      </article>
+      <article class="level-card" id="level300">
+        <h2 class="level-title">300 Level</h2>
+        <div class="level-metrics">
+          <div class="level-row"><span class="level-key">Students</span><span class="level-value count">0</span></div>
+          <div class="level-row"><span class="level-key">Dues per student</span><span class="level-value">₦ 40,000</span></div>
+          <div class="level-row"><span class="level-key">Level total</span><span class="level-value total">₦ 0</span></div>
+        </div>
+        <div class="level-status">Waiting …</div>
+      </article>
+      <article class="level-card" id="level400">
+        <h2 class="level-title">400 Level</h2>
+        <div class="level-metrics">
+          <div class="level-row"><span class="level-key">Students</span><span class="level-value count">0</span></div>
+          <div class="level-row"><span class="level-key">Dues per student</span><span class="level-value">₦ 40,000</span></div>
+          <div class="level-row"><span class="level-key">Level total</span><span class="level-value total">₦ 0</span></div>
+        </div>
+        <div class="level-status">Waiting …</div>
+      </article>
+    </section>
+
+    <section class="insight-panel">
+      <div class="insight-card">
+        <h3>Sequential totals</h3>
+        <p>The page counts each level in order, then adds the value to the central total so the overall amount is updated live.</p>
+      </div>
+      <div class="insight-card">
+        <h3>Realistic progress</h3>
+        <p>The numbers animate quickly to mimic a live count, with each completed level transferring its total into the main summary box.</p>
+      </div>
+    </section>
+  </div>
+  <script>
+    const levels = [
+      { id: 'level100', count: 115, rate: 50000 },
+      { id: 'level200', count: 109, rate: 40000 },
+      { id: 'level300', count: 90, rate: 40000 },
+      { id: 'level400', count: 70, rate: 40000 }
+    ];
+
+    const mainTotalEl = document.getElementById('duesTotal');
+    const formatNaira = (value) => '₦ ' + value.toLocaleString('en-US');
+
+    const animateNumber = (element, start, end, duration, formatter) => {
+      return new Promise((resolve) => {
+        const range = end - start;
+        const startTime = performance.now();
+
+        const update = (currentTime) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const value = Math.floor(start + range * progress);
+          element.textContent = formatter ? formatter(value) : value;
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            resolve();
+          }
+        };
+
+        requestAnimationFrame(update);
+      });
+    };
+
+    const runCountSequence = async () => {
+      let cumulativeTotal = 0;
+      for (const level of levels) {
+        const card = document.getElementById(level.id);
+        const countEl = card.querySelector('.level-value.count');
+        const totalEl = card.querySelector('.level-value.total');
+        const statusEl = card.querySelector('.level-status');
+
+        const levelTotal = level.count * level.rate;
+        statusEl.textContent = 'Counting students...';
+        await animateNumber(countEl, 0, level.count, 650);
+
+        statusEl.textContent = 'Calculating level total...';
+        await animateNumber(totalEl, 0, levelTotal, 900, formatNaira);
+
+        statusEl.textContent = 'Transferring to total...';
+        const previousTotal = cumulativeTotal;
+        cumulativeTotal += levelTotal;
+        await animateNumber(mainTotalEl, previousTotal, cumulativeTotal, 900, formatNaira);
+
+        statusEl.textContent = 'Completed';
+      }
+
+      const finalStatus = document.createElement('p');
+      finalStatus.style.margin = '0';
+      finalStatus.style.color = 'var(--muted)';
+      finalStatus.style.fontWeight = '700';
+      finalStatus.style.textAlign = 'center';
+      finalStatus.textContent = 'Total settled for all levels.';
+      document.querySelector('.insight-panel').appendChild(finalStatus);
+    };
+
+    window.addEventListener('load', () => {
+      runCountSequence();
+    });
+  </script>
+</body>
+</html>

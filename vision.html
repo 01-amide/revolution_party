@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision — Revolution Party</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+    :root {
+      color-scheme: dark;
+      --bg: #02081f;
+      --surface: rgba(10, 18, 45, 0.92);
+      --panel: rgba(12, 24, 52, 0.92);
+      --accent: #4fb8ff;
+      --accent-soft: #73d6ff;
+      --accent-alt: #ffd166;
+      --text: #eef5ff;
+      --muted: #97abd5;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, rgba(79, 184, 255, 0.18), transparent 24%),
+                  radial-gradient(circle at bottom right, rgba(13, 180, 255, 0.12), transparent 20%),
+                  linear-gradient(180deg, #02040d 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 44px;
+      display: grid;
+      gap: 30px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 0 10px;
+      border-bottom: 1px solid rgba(19, 47, 92, 0.08);
+    }
+    .brand-logo {
+      width: 104px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(79,184,255,0.14);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+    }
+    .brand-logo img { width: 100%; display: block; }
+    .nav { display: flex; flex-wrap: wrap; gap: 22px; align-items: center; }
+    .nav a { color: var(--muted); text-decoration: none; font-weight: 700; transition: color .2s ease; }
+    .nav a:hover { color: var(--accent); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid rgba(79,184,255,0.14);
+      box-shadow: var(--shadow);
+      border-radius: 34px;
+      padding: 44px 42px;
+      display: grid;
+      gap: 28px;
+    }
+    .hero::before,
+    .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.35;
+      transform: translate3d(var(--move-x, 0), var(--move-y, 0), 0);
+      transition: transform .2s ease;
+    }
+    .hero::before {
+      width: 220px;
+      height: 220px;
+      top: -40px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(26, 123, 222, 0.18), transparent 58%);
+    }
+    .hero::after {
+      width: 180px;
+      height: 180px;
+      bottom: -30px;
+      left: -60px;
+      background: radial-gradient(circle, rgba(199, 154, 41, 0.18), transparent 58%);
+    }
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .hero-title {
+      margin: 0;
+      font-size: clamp(3rem, 4.5vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-family: 'Constantia', 'Georgia', serif;
+      color: var(--accent);
+      max-width: 820px;
+    }
+    .hero-text {
+      margin: 0;
+      max-width: 700px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+    .button-primary {
+      background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+      color: white;
+      box-shadow: 0 18px 36px rgba(19,47,92,0.18);
+    }
+    .button-secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    .button:hover { transform: translateY(-2px); }
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 8, 24, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
+      z-index: 9999;
+    }
+    .page-loader.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .page-loader .spinner {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 8px solid rgba(19, 47, 92, 0.16);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .vision-summary {
+      display: grid;
+      gap: 24px;
+    }
+    .vision-panel {
+      background: rgba(255,255,255,0.08);
+      border-radius: 32px;
+      border: 1px solid rgba(79,184,255,0.14);
+      box-shadow: var(--shadow);
+      padding: 34px;
+    }
+    .vision-panel h2 {
+      margin: 0 0 18px;
+      font-size: 1.85rem;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .vision-panel h2::before {
+      content: '🧠';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      color: white;
+      box-shadow: 0 16px 32px rgba(19,47,92,0.12);
+      font-size: 1.2rem;
+    }
+    .vision-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 1rem;
+    }
+    .vision-quote {
+      max-width: 480px;
+      margin: 0;
+      padding: 20px 26px;
+      border-left: 5px solid var(--accent);
+      background: rgba(26,123,222,0.08);
+      border-radius: 24px;
+      color: var(--accent);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+    .vision-timeline {
+      position: relative;
+      display: grid;
+      gap: 28px;
+      padding-left: 84px;
+      max-width: 100%;
+    }
+    .vision-timeline::before {
+      content: '';
+      position: absolute;
+      left: 42px;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-soft));
+      border-radius: 999px;
+    }
+    .step-card {
+      position: relative;
+      background: rgba(255,255,255,0.08);
+      border-radius: 40px;
+      border: 1px solid rgba(79,184,255,0.14);
+      box-shadow: 0 26px 58px rgba(0,0,0,0.22);
+      padding: 34px 42px 34px 54px;
+      overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+      min-height: 170px;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 30px 72px rgba(19,47,92,0.14);
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      left: -36px;
+      top: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      box-shadow: 0 18px 34px rgba(19,47,92,0.14);
+    }
+    .step-card::after {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 58px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 6px solid var(--accent);
+    }
+    .step-card h3 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+    .step-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.85;
+      font-size: 1rem;
+    }
+    .vision-footer {
+      display: grid;
+      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .vision-footer article {
+      padding: 26px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(79,184,255,0.14);
+      box-shadow: 0 22px 52px rgba(0,0,0,0.22);
+    }
+    .vision-footer article h4 {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .vision-footer article p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    @media (max-width: 900px) {
+      .vision-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .page { padding: 22px 16px 36px; }
+      .hero { padding: 28px 24px; }
+      .hero-title { font-size: 2.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand-logo">
+        <img src="revolution party logo.png" alt="Revolution Party Logo">
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="team.html">Team</a>
+        <a href="vision.html">Vision</a>
+        <a href="support.html">Support</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="vision-hero">
+      <span class="hero-label">NUASA Vision</span>
+      <h1 class="hero-title">Building a stronger, accountable, and student-centered NUASA.</h1>
+      <p class="hero-text">Our vision is to empower every accounting student academically, professionally, and socially through purposeful leadership, unity, innovation, and opportunity. The Revolution Party’s direction is focused on partnership, support, and leadership that truly represents NUASA.</p>
+      <div class="hero-actions">
+        <a href="index.html" class="button button-secondary">Back to home</a>
+        <a href="team.html" class="button button-primary">Meet the team</a>
+      </div>
+    </section>
+
+    <section class="vision-summary">
+      <div class="vision-panel">
+        <h2>NUASA Revolution Party Vision</h2>
+        <p>The vision of the Nile University Accounting Students Association Revolution Party is to build a stronger, progressive, accountable, and student-centered NUASA that empowers every accounting student academically, professionally, and socially through purposeful leadership, unity, innovation, and opportunity.</p>
+      </div>
+      <div class="vision-quote">“Together, We Rise.”</div>
+      <div class="vision-timeline">
+        <div class="step-card">
+          <h3>Stronger internship partnerships</h3>
+          <p>Creating strong partnerships and bonds with accounting and financial firms to secure better SIWES and internship opportunities for students.</p>
+        </div>
+        <div class="step-card">
+          <h3>Accessible learning resources</h3>
+          <p>Establishing accessible accounting libraries and academic resource centers to support learning and professional development.</p>
+        </div>
+        <div class="step-card">
+          <h3>Scholarship & certification support</h3>
+          <p>Securing scholarship opportunities and professional support programs with ICAN and ACCA, especially for students pursuing the FIA stage and other certifications.</p>
+        </div>
+        <div class="step-card">
+          <h3>Student & staff welfare</h3>
+          <p>Prioritizing the welfare, development, and support of both students and staff within the department.</p>
+        </div>
+        <div class="step-card">
+          <h3>Accountability and unity</h3>
+          <p>Promoting accountability, transparency, professionalism, unity, and excellence within NUASA.</p>
+        </div>
+        <div class="step-card">
+          <h3>Financial transparency</h3>
+          <p>Since it’s your money, you deserve to know how it is being spent — we will publish monthly account ledgers with clear, easy-to-read details.</p>
+        </div>
+        <div class="step-card">
+          <h3>Every voice, every opportunity</h3>
+          <p>Creating a NUASA where every accounting student has a voice, opportunities to grow, and leadership that truly represents them.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="page-loader" id="pageLoader"><div class="spinner"></div></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+      hero.addEventListener('mousemove', e => {
+        const rect = hero.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
+        hero.style.setProperty('--move-x', `${x}px`);
+        hero.style.setProperty('--move-y', `${y}px`);
+      });
+      hero.addEventListener('mouseleave', () => {
+        hero.style.setProperty('--move-x', '0px');
+        hero.style.setProperty('--move-y', '0px');
+      });
+      const loader = document.getElementById('pageLoader');
+      if (loader) {
+        const clickable = document.querySelectorAll('a[href], button');
+        clickable.forEach(node => {
+          node.addEventListener('click', () => {
+            const href = node.getAttribute('href') || '';
+            if (href.startsWith('#') || href.startsWith('mailto:')) return;
+            loader.classList.add('active');
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

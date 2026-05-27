@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Meet the Team — Revolution Party</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+    :root{
+      color-scheme: dark;
+      --bg: #02081f;
+      --card: rgba(12, 20, 44, 0.92);
+      --accent:#4fb8ff;
+      --muted:#a7b8d5;
+      --glass: rgba(255,255,255,0.08);
+      --shadow: 0 24px 70px rgba(0,0,0,0.35);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:'Poppins','Segoe UI',system-ui,-apple-system,Roboto,'Helvetica Neue',Arial;background:radial-gradient(circle at top left, rgba(79,184,255,0.14), transparent 24%),radial-gradient(circle at bottom right, rgba(13,180,255,0.1), transparent 18%),linear-gradient(180deg,#02040d,#071229);color:var(--text)}
+    .container{max-width:1180px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:88px;height:auto;border-radius:10px;display:block}
+    /* interactive heading gradient */
+    .brand h1{font-size:1.2rem;margin:0;color:var(--accent);font-weight:800;background:linear-gradient(90deg,#1a7be2,#c79a29);-webkit-background-clip:text;background-clip:text;color:transparent;transition:letter-spacing .24s,transform .24s}
+    .brand h1:hover{letter-spacing:0.6px;transform:translateY(-2px)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px;font-weight:600;position:relative}
+    nav a::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,#1a7be2,#c79a29);bottom:-6px;transform:scaleX(0);transform-origin:left;transition:transform .22s}
+    nav a:hover::after{transform:scaleX(1)}
+    .hero{background:radial-gradient(circle at top left, rgba(79,184,255,0.12), transparent 38%), var(--surface);padding:34px 30px 28px;border-radius:22px;box-shadow:var(--shadow);margin-bottom:32px}
+    .hero h2{font-family:'Georgia', Constantia, 'Times New Roman', serif;font-size:2.75rem;line-height:1.02;letter-spacing:0.02em;margin:0 0 10px;font-weight:800;color:var(--accent);background:linear-gradient(90deg,#1a7be2,#c79a29);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 16px 30px rgba(26,123,222,0.12);transition:transform .28s ease,text-shadow .28s ease;display:inline-block}
+    .hero h2:hover{transform:translateY(-2px);text-shadow:0 20px 38px rgba(26,123,222,0.18)}
+    .hero p{margin:0;color:var(--muted);font-size:1rem;max-width:760px}
+
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:20px}
+    .team-card{background:rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;position:relative;padding:0;box-shadow:0 20px 60px rgba(0,0,0,0.24);transform-style:preserve-3d;transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .28s}
+    .team-card:hover{transform:translateY(-10px) rotateX(0.5deg);box-shadow:0 36px 80px rgba(10,30,70,0.12)}
+    .page-loader{position:fixed;inset:0;background:rgba(2,8,24,0.82);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease;z-index:9999}
+    .page-loader.active{opacity:1;visibility:visible}
+    .page-loader .spinner{width:60px;height:60px;border-radius:50%;border:8px solid rgba(19,47,92,.16);border-top-color:var(--accent);animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .photo-wrap{position:relative;height:320px;overflow:hidden;background:linear-gradient(180deg,rgba(79,184,255,0.08),rgba(255,255,255,0.04));border-radius:28px;display:grid;place-items:center;border:1px solid rgba(79,184,255,0.12);box-shadow:0 18px 32px rgba(0,0,0,0.18)}
+    .photo-wrap img{max-width:100%;max-height:100%;width:auto;height:100%;object-fit:contain;object-position:center 22%!important;display:block;transform:scale(1);transition:transform .45s ease;filter:brightness(1) contrast(1)}
+    .team-card:hover .photo-wrap img{transform:scale(1.03);filter:brightness(1)}
+    .photo-overlay{display:none}
+    .member-info{padding:18px 18px 22px}
+    .member-role{font-size:1rem;color:transparent;margin:0 0 8px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;background:linear-gradient(90deg, #1a7be2, #c79a29);-webkit-background-clip:text;background-clip:text;}
+    .member-name{font-size:1.2rem;color:rgba(255,255,255,0.94);margin:0 0 8px;font-weight:900;line-height:1.1;text-shadow:0 10px 24px rgba(0,0,0,0.35)}
+    .member-bio{color:rgba(167,184,213,0.95);margin:0;font-size:.98rem;line-height:1.7;}
+
+    /* small badge */
+    .badge{position:absolute;left:14px;top:14px;background:rgba(255,255,255,0.12);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.78rem;box-shadow:0 8px 18px rgba(0,0,0,0.18)}
+
+    /* tilt via JS */
+    .team-card[data-tilt]{perspective:1000px}
+
+    @media (max-width:680px){.photo-wrap{height:160px}}
+  </style>
+  <script>
+    // Simple tilt effect and image focal-point handler
+    document.addEventListener('DOMContentLoaded',()=>{
+      const cards = document.querySelectorAll('.team-card');
+      cards.forEach(card=>{
+        card.addEventListener('mousemove',e=>{
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          const rx = (y * 8).toFixed(2);
+          const ry = (x * -12).toFixed(2);
+          card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+        });
+        card.addEventListener('mouseleave',()=>{card.style.transform='translateY(0) rotateX(0) rotateY(0)'});
+      });
+
+      // ensure uniform face-focused object position for all profile photos
+      document.querySelectorAll('.photo-wrap img').forEach(img=>{
+        img.style.objectPosition = 'center 22%';
+      });
+
+      // interactive brand heading subtle parallax
+      const heading = document.querySelector('.brand h1');
+      if(heading){
+        heading.addEventListener('mousemove', e=>{
+          const rect = heading.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          heading.style.background = `linear-gradient(90deg, rgba(26,123,222,${0.4 + x*0.6}), rgba(199,154,41,${0.4 + (1-x)*0.6}))`;
+        });
+        heading.addEventListener('mouseleave', ()=>{ heading.style.background = 'linear-gradient(90deg,#1a7be2,#c79a29)'; });
+      }
+
+      const loader = document.getElementById('pageLoader');
+      if (loader) {
+        const clickable = document.querySelectorAll('a[href], button');
+        clickable.forEach(node => {
+          node.addEventListener('click', () => {
+            const href = node.getAttribute('href') || '';
+            if (href.startsWith('#') || href.startsWith('mailto:')) return;
+            loader.classList.add('active');
+          });
+        });
+      }
+
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="revolution party logo.png" alt="Revolution Party logo">
+        <h1>Revolution Party — Team 26/27</h1>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="#team">Team</a>
+        <a href="support.html">Support</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Meet the Revolution Party team for the 26/27 session</h2>
+      <p>Explore our leadership — hover any profile for an interactive preview, click to learn more.</p>
+    </section>
+
+    <section id="team" class="team-grid">
+      <!-- President -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap president-photo">
+          <span class="badge">President</span>
+          <img src="team/Maimako Sallah.jpg" data-pos="center 65%" alt="Maimako Sallah - President">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">President</h3>
+          <div class="member-name">Maimako Sallah</div>
+          <p class="member-bio">Leading the party with vision and dedication for the 26/27 session.</p>
+        </div>
+      </article>
+
+      <!-- Vice President -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Vice</span>
+          <img src="team/Maryam Rufai.jpg" data-pos="center center" alt="Maryam Rufai - Vice President">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Vice President</h3>
+          <div class="member-name">Maryam Rufai</div>
+          <p class="member-bio">Supporting leadership and strategic coordination.</p>
+        </div>
+      </article>
+
+      <!-- General Secretary -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Gen Sec</span>
+          <img src="team/Edikan Ekong.jpg" data-pos="center center" alt="Edikan Ekong - General Secretary">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">General Secretary</h3>
+          <div class="member-name">Edikan Ekong</div>
+          <p class="member-bio">Organising the party’s administration and records.</p>
+        </div>
+      </article>
+
+      <!-- Assistant General Secretary -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Asst Gen</span>
+          <img src="team/Okwukuw Nnendah.jpg" data-pos="center center" alt="Okwukuw Nnendah - Assistant General Secretary">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Assistant General Secretary</h3>
+          <div class="member-name">Okwkwu Nnendah</div>
+          <p class="member-bio">Assisting the general secretary with daily operations.</p>
+        </div>
+      </article>
+
+      <!-- Academic Director -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Academic</span>
+          <img src="team/Fatima Jega.jpg" data-pos="center center" alt="Fatima Jega - Academic Director">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Academic Director</h3>
+          <div class="member-name">Fatima Jega</div>
+          <p class="member-bio">Leading the party’s academic and research initiatives.</p>
+        </div>
+      </article>
+
+      <!-- Treasurer -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap treasurer-photo">
+          <span class="badge">Treasurer</span>
+          <img src="team/Oche Adikwu.jpg" data-pos="center 100%" alt="Oche Adikwu - Treasurer">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Treasurer</h3>
+          <div class="member-name">Oche Adikwu</div>
+          <p class="member-bio">Managing the party’s finances with transparency.</p>
+        </div>
+      </article>
+
+      <!-- Auditor -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Auditor</span>
+          <img src="team/Emmanuella Okoye.jpg" data-pos="center center" alt="Emmanuella Okoye - Auditor">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Auditor</h3>
+          <div class="member-name">Emmanuella Okoye</div>
+          <p class="member-bio">Overseeing financial accountability and audits.</p>
+        </div>
+      </article>
+
+      <!-- Financial Secretary -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Fin Sec</span>
+          <img src="team/Hanifa Suleiman.jpg" data-pos="center center" alt="Hanifa Suleiman - Financial Secretary">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Financial Secretary</h3>
+          <div class="member-name">Hanifa Suleiman</div>
+          <p class="member-bio">Handling financial records and receipts.</p>
+        </div>
+      </article>
+
+      <!-- Sports Director -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Sports</span>
+          <img src="team/Macaulay-Gbogidi Princewill.jpg" data-pos="center center" alt="Macaulay-Gbogidi Princewill - Sports Director">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Sports Director</h3>
+          <div class="member-name">Macaulay- Gbogidi Princewill</div>
+          <p class="member-bio">Coordinating sports & physical activities for members.</p>
+        </div>
+      </article>
+
+      <!-- Welfare Director -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Welfare</span>
+          <img src="team/Abasiofon Daniel.jpg" data-pos="center center" alt="Abasiofon Daniel - Welfare Director">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Welfare Director</h3>
+          <div class="member-name">Abasiofon Daniel</div>
+          <p class="member-bio">Looking after member wellbeing and support programmes.</p>
+        </div>
+      </article>
+
+      <!-- Welfare Officer -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Welfare Off.</span>
+          <img src="team/Isaac Oladipupo.jpg" data-pos="center center" alt="Isaac Oladipupo - Welfare Officer">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Welfare Officer</h3>
+          <div class="member-name">Isaac Oladipupo</div>
+          <p class="member-bio">Supporting welfare programmes and outreach.</p>
+        </div>
+      </article>
+
+      <!-- PRO 2 -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">PRO 2</span>
+          <img src="team/Ovuarume Erika.jpg" data-pos="center center" alt="Ovuarume Erika - PRO 2">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">PRO 2</h3>
+          <div class="member-name">Ovuarume Erika</div>
+          <p class="member-bio">Public relations and press coordination.</p>
+        </div>
+      </article>
+
+      <!-- Social Director -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Social</span>
+          <img src="team/Oluchi Ebeku.jpg" data-pos="center center" alt="Oluchi Ebeku - Social Director">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Social Director</h3>
+          <div class="member-name">Oluchi Ebeku</div>
+          <p class="member-bio">Planning social events and community engagement.</p>
+        </div>
+      </article>
+
+      <!-- Social Officer -->
+      <article class="team-card" data-tilt>
+        <div class="photo-wrap">
+          <span class="badge">Social Off.</span>
+          <img src="team/Udo Elumelu.jpg" data-pos="center center" alt="Udo Elumelu - Social Officer">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="member-info">
+            <h3 class="member-role">Social Officer</h3>
+          <div class="member-name">Udo Elumelu</div>
+          <p class="member-bio">Supporting social programmes and communications.</p>
+        </div>
+      </article>
+
+    </section>
+
+    <section id="contact" style="margin-top:40px">
+      <h3 style="margin:0 0 8px;font-size:1.1rem;color:var(--accent)">Interested in collaborating?</h3>
+      <p style="margin:0;color:var(--muted)">Email the party at <a href="mailto:info@revolutionparty.gmail.com">info@revolutionparty.gmail.com</a></p>
+    </section>
+
+  </div>
+  <div class="page-loader" id="pageLoader"><div class="spinner"></div></div>
+</body>
+</html>
