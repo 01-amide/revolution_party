@@ -55,7 +55,10 @@
     /* tilt via JS */
     .team-card[data-tilt]{perspective:1000px}
 
-    @media (max-width:680px){.photo-wrap{height:160px}}
+    @media (max-width:680px){
+      .photo-wrap{height:250px}
+      .team-card{min-height:520px}
+    }
   </style>
   <script>
     // Simple tilt effect and image focal-point handler
